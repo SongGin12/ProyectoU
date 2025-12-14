@@ -12,8 +12,16 @@ export class Jugador {
     this.tablero = new Tablero();
   }
 
-  jugarTurno(mazo: Mazo, oponente: Jugador, pilaDescarte: PilaDescarte, historial: ListaHistorial, fila: number, columna: number): boolean {
+  jugarTurno(
+    mazo: Mazo,
+    oponente: Jugador,
+    pilaDescarte: PilaDescarte,
+    historial: ListaHistorial,
+    fila: number,
+    columna: number
+  ): boolean {
 
+    // 1. Robar carta
     var carta = mazo.robarCarta();
     if (carta === null) {
       return false;

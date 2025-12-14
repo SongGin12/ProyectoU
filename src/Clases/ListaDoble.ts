@@ -8,7 +8,7 @@ export class NodoHistorial {
   siguiente: NodoHistorial | null = null;
   anterior: NodoHistorial | null = null;
 
-  constructor(turno: number, jugador: string, carta: string, fila: number, columna: number, eliminadas: string[]) {
+  constructor(turno: number, jugador: string, carta: string, fila: number,columna: number, eliminadas: string[]){
     this.turno = turno;
     this.jugador = jugador;
     this.carta = carta;
@@ -20,7 +20,7 @@ export class NodoHistorial {
 export class ListaHistorial {
   cabeza: NodoHistorial | null = null;
   cola: NodoHistorial | null = null;
-  agregar(turno: number, jugador: string, carta: string, fila: number, columna: number, eliminadas: string[]) {
+  agregar(turno: number, jugador: string, carta: string, fila: number, columna: number, eliminadas: string[]){
     const nuevo = new NodoHistorial(turno, jugador, carta, fila, columna, eliminadas);
     if (this.cabeza === null) {
       this.cabeza = nuevo;
