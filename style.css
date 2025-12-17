@@ -12,8 +12,10 @@
 body {
     font-family: 'Times New Roman', Times, serif;
     margin: 0;
-    background-color: var(--bg-main);
-    background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+    /* Nuevo fondo */
+    background: url('assets/background.png') no-repeat center center fixed;
+    background-size: cover;
+    background-color: #0d0d0d;
     color: var(--text-main);
     display: flex;
     flex-direction: column;
@@ -72,19 +74,22 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    gap: 25px;
-    background: rgba(30, 30, 30, 0.4);
-    padding: 30px;
-    border-radius: 8px;
-    border: 1px solid #222;
+    gap: 50px;
+    /* Mayor separación elegante */
+    padding: 20px;
+    flex-wrap: wrap;
+    /* Responsive wrap */
 }
 
 .player-station {
+    /* Estilo Madera - Solicitado por usuario */
     background: var(--wood-medium);
-    border: 2px solid #444;
+    border: 3px solid var(--gold-border);
     padding: 20px;
-    border-radius: 4px;
+    border-radius: 8px;
+    /* Bordes redondeados standard */
     transition: all 0.4s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .player-station.active {
@@ -245,8 +250,12 @@ body {
 /* Mazo 3D - 3 cartas apiladas */
 .deck-3d {
     position: relative;
-    width: 90px;
-    height: 130px;
+    /* Frame para el mazo */
+    width: 150px;
+    height: 190px;
+    background: url('assets/ui_frame.png') no-repeat center center;
+    background-size: 100% 100%;
+
     cursor: pointer;
     perspective: 1000px;
     margin-bottom: 15px;
@@ -256,8 +265,16 @@ body {
     position: absolute;
     width: 90px;
     height: 130px;
-    background: linear-gradient(135deg, #5a0a0a 0%, #7a1212 50%, #5a0a0a 100%);
-    border: 2px solid var(--gold-border);
+
+    /* Centrado dentro del marco (150-90)/2 y (190-130)/2 */
+    left: 30px;
+    top: 30px;
+
+    /* Card Back Design */
+    background: url('assets/cards/card_back_design.png') no-repeat center center;
+    background-size: cover;
+
+    border: 1px solid rgba(203, 161, 99, 0.3);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -437,6 +454,7 @@ body {
     color: #888;
     text-align: center;
 }
+
 
 /* Indicador de reciclaje */
 .recycle-indicator {
@@ -899,4 +917,65 @@ body {
     padding: 2px 5px;
     border-radius: 3px;
     color: #aaffaa;
+}
+
+/* Fix: Tooltip de historial (Top Buttons) hacia abajo */
+.top-buttons .tooltip-container .tooltip-text {
+    bottom: auto;
+    top: 135%;
+}
+
+.top-buttons .tooltip-container .tooltip-text::after {
+    bottom: 100%;
+    top: auto;
+    border-color: transparent transparent var(--gold-border) transparent;
+}
+
+/* Responsive UI Improvements */
+@media (max-width: 900px) {
+    .main-board {
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 20px;
+        background: transparent;
+        border: none;
+        padding: 10px;
+    }
+
+    .player-station {
+        width: 100%;
+        max-width: 400px;
+        min-width: unset;
+        padding: 40px 25px;
+        /* Ajuste para el marco en móvil */
+    }
+
+    .interaction-zone {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin: 10px 0;
+    }
+
+    .deck-3d {
+        margin-bottom: 0;
+    }
+
+    .header-title {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .card-grid {
+        gap: 8px;
+        /* Cartas más juntas en móvil */
+    }
+
+    .card-slot,
+    .card-entity {
+        transform: scale(0.95);
+        /* Ligeramente más pequeñas */
+    }
 }
