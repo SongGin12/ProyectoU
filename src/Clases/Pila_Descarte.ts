@@ -4,18 +4,17 @@ import { NodoCarta } from "./NodoCarta.js";
 export class PilaDescarte {
   Top: NodoCarta | null = null;
 
-  insertarFin(carta: Carta): void {
-    const nuevo = new NodoCarta(carta);
-    if (this.Top === null) {
-      this.Top = nuevo;
-    } 
-    else {
-      let actual = this.Top;
-      while(actual.siguiente !== null){
-        actual = actual.siguiente;
-      }
-      actual.siguiente = nuevo;
-    }
+  push(carta: Carta): void {
+    const nodo = new NodoCarta(carta);
+    nodo.siguiente = this.Top;
+    this.Top = nodo;
+  }
+
+  pop(): Carta | null {
+    if (!this.Top) return null;
+    const carta = this.Top.carta;
+    this.Top = this.Top.siguiente;
+    return carta;
   }
 
   estaVacia(): boolean {
@@ -59,7 +58,7 @@ export class PilaDescarte {
     }
     this.Top = null;
     for (const carta of todasLasCartas) {
-      this.insertarFin(carta);
+      this.push(carta);
     }
   }
 }

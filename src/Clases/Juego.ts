@@ -1,7 +1,8 @@
 import { Jugador } from "./Jugador.js";
-import { Mazo } from "./ListaCircular.js";
+import { Mazo } from "./Pila.js";
 import { PilaDescarte } from "./Pila_Descarte.js";
-import { ListaHistorial } from "./ListaDoble.js";
+import { ListaHistorial } from "./ListaHistorial.js";
+import { GestorTurnos } from "./GestorTurnos.js";
 
 export class JuegoRangoYPalo {
   jugador1: Jugador;
@@ -9,7 +10,7 @@ export class JuegoRangoYPalo {
   mazo: Mazo;
   pilaDescarte: PilaDescarte;
   historial: ListaHistorial;
-  turno: number;
+  gestorTurnos: GestorTurnos;
 
   constructor(nombre1: string, nombre2: string) {
     this.jugador1 = new Jugador(nombre1);
@@ -17,7 +18,10 @@ export class JuegoRangoYPalo {
     this.mazo = new Mazo();
     this.pilaDescarte = new PilaDescarte();
     this.historial = new ListaHistorial();
-    this.turno = 1;
+
+    this.gestorTurnos = new GestorTurnos();
+    this.gestorTurnos.agregarJugador(this.jugador1);
+    this.gestorTurnos.agregarJugador(this.jugador2);
   }
 
   iniciarJuego(): void {
@@ -26,73 +30,44 @@ export class JuegoRangoYPalo {
   }
 
   ejecutarJuego(): void {
-    var juegoTerminado = false;
+    let juegoTerminado = false;
 
-    while (juegoTerminado === false) {
+    while (!juegoTerminado) {
+      const jugadorActual = this.gestorTurnos.obtenerJugadorActual()!;
+      const oponente = jugadorActual === this.jugador1 ? this.jugador2 : this.jugador1;
 
-      var jugadorActual: Jugador;
-      var oponente: Jugador;
-
-      if (this.turno % 2 === 1) {
-        jugadorActual = this.jugador1;
-        oponente = this.jugador2;
-      } else {
-        jugadorActual = this.jugador2;
-        oponente = this.jugador1;
-      }
-      var fila = 0;
-      var columna = 0;
-      var encontrada = false;
-
-      var f = 0;
-      while (f < 3 && encontrada === false) {
-        var c = 0;
-        while (c < 3 && encontrada === false) {
-          if (jugadorActual.tablero.casillas[f]![c] === null) {
-            fila = f;
-            columna = c;
-            encontrada = true;
-          }
-          c = c + 1;
-        }
-        f = f + 1;
-      }
-      var exito = jugadorActual.jugarTurno(
+      const exito = jugadorActual.jugarTurno(
         this.mazo,
         oponente,
         this.pilaDescarte,
-        this.historial,
-        fila,
-        columna
+        this.historial
       );
-      if (exito === true) {
-        this.turno = this.turno + 1;
+
+      if (exito) {
+        this.gestorTurnos.avanzarTurno();
       }
-      if (this.jugador1.tablero.estaLleno()) {
+
+      if (this.jugador1.tablero.estaLleno() || this.jugador2.tablero.estaLleno() || this.mazo.estaVacio()) {
         juegoTerminado = true;
       }
-      if (this.jugador2.tablero.estaLleno()) {
-        juegoTerminado = true;
-      }
-      if (this.mazo.estaVacio()) {
-        juegoTerminado = true;
-      }
+
+      this.historial.mostrar();
     }
 
     this.determinarGanador();
   }
 
   determinarGanador(): void {
-    var puntaje1 = this.jugador1.tablero.calcularPuntuacion();
-    var puntaje2 = this.jugador2.tablero.calcularPuntuacion();
+    const puntaje1 = this.jugador1.tablero.calcularPuntuacion();
+    const puntaje2 = this.jugador2.tablero.calcularPuntuacion();
 
-    console.log("Puntaje de " + this.jugador1.nombre + ": " + puntaje1);
-    console.log("Puntaje de " + this.jugador2.nombre + ": " + puntaje2);
+    console.log(`Puntaje de ${this.jugador1.nombre}: ${puntaje1}`);
+    console.log(`Puntaje de ${this.jugador2.nombre}: ${puntaje2}`);
 
     if (puntaje1 > puntaje2) {
-      console.log("Ganador: " + this.jugador1.nombre);
+      console.log(`Ganador: ${this.jugador1.nombre}`);
     } else if (puntaje2 > puntaje1) {
-      console.log("Ganador: " + this.jugador2.nombre);
+      console.log(`Ganador: ${this.jugador2.nombre}`);
     } else {
       console.log("Empate");
     }

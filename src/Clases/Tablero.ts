@@ -1,93 +1,58 @@
 import { Carta } from "./Carta.js";
 import { PilaDescarte } from "./Pila_Descarte.js";
+import { ColumnaTablero } from "./ColumnaTablero.js";
+import { NodoCarta } from "./NodoCarta.js";
 
 export class Tablero {
-  casillas: (Carta | null)[][];
+  columnas: [ColumnaTablero, ColumnaTablero, ColumnaTablero];
 
   constructor() {
-    this.casillas = [
-      [null, null, null],
-      [null, null, null],
-      [null, null, null]
-    ];
+    this.columnas = [new ColumnaTablero(), new ColumnaTablero(), new ColumnaTablero()];
   }
 
-  colocarCarta(carta: Carta, fila: number, columna: number): boolean {
-    if (this.casillas[fila]![columna]! !== null) {
-      return false;
-    }
-    this.casillas[fila]![columna]! = carta;
-    return true;
+  colocarCarta(carta: Carta, columnaIndex: number): boolean {
+        const columna = this.columnas[columnaIndex];
+        if (columna!.estaLlena()) return false;
+        columna!.insertarFinal(carta);
+        return true;
   }
-  public eliminarCartasPorRangoEnColumna(rangoParaEliminar: number, columnaObjetivo: number, pilaDescarte: PilaDescarte): void {
-      
-      let f: number = 0;
-      while (f < 3) {
-          let cartaActual: Carta | null = this.casillas[f]![columnaObjetivo]!;
-                  if (cartaActual !== null) {
-              if (cartaActual.getRango() === rangoParaEliminar) {
-                  pilaDescarte.insertarFin(cartaActual);
-                  this.casillas[f]![columnaObjetivo] = null;
-                  
-                  console.log("¡Ataque! Carta " + rangoParaEliminar + " eliminada en fila " + f + ", columna " + columnaObjetivo);
-              }
-          }
-          f = f + 1;
-      }
-  }
-  calcularPuntuacionColumna(columna: number): number {
-    var suma = 0;
-    var f = 0;
-    while (f < 3) {
-      var carta = this.casillas[f]![columna];
-      if (carta !== null) {
-        suma = suma + carta!.getValor();
-      }
-      f = f + 1;
+
+  eliminarCartasPorRangoEnColumna(rangoParaEliminar: number, columnaIndex: number, pilaDescarte: PilaDescarte): void {
+        const columna = this.columnas[columnaIndex];
+        let actual = columna!.top;
+        while (actual) {
+            const siguiente = actual.siguiente;
+            if (actual.carta.getRango() === rangoParaEliminar) {
+                pilaDescarte.push(actual.carta);
+                columna!.eliminarNodo(actual);
+                console.log(`¡Ataque! Carta ${rangoParaEliminar} eliminada en columna ${columnaIndex}`);
+            }
+            actual = siguiente;
+        }
     }
-    var c0 = this.casillas[0]![columna];
-    var c1 = this.casillas[1]![columna];
-    var c2 = this.casillas[2]![columna];
-    var bonus = 0;
-    if (c0 !== null && c1 !== null && c0!.getRango() === c1!.getRango()) {
-      bonus = bonus + 1;
+
+  calcularPuntuacionColumna(columnaIndex: number): number {
+        const columna = this.columnas[columnaIndex];
+        const cartas = columna!.recorrerAdelante();
+        let suma = cartas.reduce((acc, c) => acc + c.getValor(), 0);
+
+        // (RIVAN-NOTA) Esta vaina es para los Bonus por coincidencia de palo, RECUERDALO CHINGADA
+        let bonus = 0;
+        if (cartas.length >= 2) {
+            if (cartas[0]!.getRango() === cartas[1]!.getRango()) bonus++;
+            if (cartas.length === 3 && cartas[0]!.getRango() === cartas[2]!.getRango()) bonus++;
+            if (cartas.length === 3 && cartas[1]!.getRango() === cartas[2]!.getRango()) bonus++;
+        }
+        if (bonus === 1) suma += 5;
+        else if (bonus === 3) suma += 15;
+        return suma;
     }
-    if (c0 !== null && c2 !== null && c0!.getRango() === c2!.getRango()) {
-      bonus = bonus + 1;
-    }
-    if (c1 !== null && c2 !== null && c1!.getRango() === c2!.getRango()) {
-      bonus = bonus + 1;
-    }
-    if (bonus === 1) {
-      suma = suma + 5;
-    } else if (bonus === 3) {
-      suma = suma + 15;
-    }
-    return suma;
-  }
 
   calcularPuntuacion(): number {
-    var total = 0;
-    var col = 0;
-    while (col < 3) {
-      total = total + this.calcularPuntuacionColumna(col);
-      col = col + 1;
-    }
-    return total;
+    return this.columnas.reduce((acc, _, idx) => acc + this.calcularPuntuacionColumna(idx), 0);
   }
 
   estaLleno(): boolean {
-    var f = 0;
-    while (f < 3) {
-      var c = 0;
-      while (c < 3) {
-        if (this.casillas[f]![c] === null) {
-          return false;
-        }
-        c = c + 1;
-      }
-      f = f + 1;
-    }
-    return true;
+    return this.columnas.every(col => col.estaLlena());
   }
 }
