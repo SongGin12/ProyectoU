@@ -1,7 +1,6 @@
 import { Carta } from "./Carta.js";
 import { PilaDescarte } from "./Pila_Descarte.js";
 import { ColumnaTablero } from "./ColumnaTablero.js";
-import { NodoCarta } from "./NodoCarta.js";
 
 export class Tablero {
   columnas: [ColumnaTablero, ColumnaTablero, ColumnaTablero];

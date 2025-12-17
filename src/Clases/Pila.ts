@@ -52,4 +52,44 @@ export class Mazo {
       this.push(carta);
     }
   }
+
+  // Métodos adicionales (de PilaDescarte)
+  obtenerTodas(): Carta[] {
+    const resultado: Carta[] = [];
+    let actual = this.Top;
+    while (actual !== null) {
+      resultado.push(actual.carta);
+      actual = actual.siguiente;
+    }
+    return resultado;
+  }
+
+  vaciarYDevolver(): Carta[] {
+    const cartas = this.obtenerTodas();
+    this.Top = null;
+    return cartas;
+  }
+
+  limpiar(): void {
+    this.Top = null;
+  }
+
+  contarCartas(): number {
+    let count = 0;
+    let actual = this.Top;
+    while (actual) {
+      count++;
+      actual = actual.siguiente;
+    }
+    return count;
+  }
+
+  imprimir(): void {
+    let actual = this.Top;
+    console.log("Mazo (Top -> Bottom):");
+    while (actual !== null) {
+      console.log("  ", actual.carta.toString());
+      actual = actual.siguiente;
+    }
+  }
 }

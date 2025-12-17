@@ -6,6 +6,7 @@ import { ListaHistorial } from "./ListaHistorial.js";
 export class Jugador {
   nombre: string;
   tablero: Tablero;
+  barajadasRestantes: number = 3;
 
   constructor(nombre: string) {
     this.nombre = nombre;

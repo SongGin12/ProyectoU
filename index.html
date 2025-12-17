@@ -1,278 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corte de Baraja - Cardlebones</title>
+    <title>Corte de Baraja - Edición Profesional</title>
 
-    <style>
-        :root {
-            --bg-main: #0d0d0d;
-            --wood-dark: #1a0f0a; 
-            --wood-medium: #2d1a11; 
-            --gold-border: #cba163; 
-            --gold-glow: #f0d5a3;
-            --accent-red: #7a1212;
-            --card-front: #fdfaf5;
-            --text-main: #e0d5c1;
-        }
-
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            margin: 0;
-            background-color: var(--bg-main);
-            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header-title {
-            font-size: 2.8rem;
-            color: var(--gold-border);
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 30px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-bottom: 3px double var(--gold-border);
-            padding-bottom: 10px;
-        }
-
-        .game-container {
-            display: grid;
-            grid-template-columns: 320px 1fr; 
-            gap: 25px;
-            width: 100%;
-            max-width: 1350px;
-        }
-
-        /* --- HISTORIAL --- */
-        .log-panel {
-            background: var(--wood-dark);
-            border: 2px solid var(--gold-border);
-            border-radius: 4px;
-            padding: 15px;
-            height: 650px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.7);
-        }
-
-        .log-panel h3 {
-            color: var(--gold-border);
-            text-align: center;
-            margin-top: 0;
-            font-variant: small-caps;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-
-        #log-scroll {
-            flex-grow: 1;
-            overflow-y: auto;
-            font-family: Arial, sans-serif;
-            padding-right: 5px;
-        }
-
-        .log-entry {
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 8px;
-            padding: 10px;
-            border-left: 4px solid var(--gold-border);
-            font-size: 0.85rem;
-            animation: fadeIn 0.3s forwards;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* --- MESA DE JUEGO --- */
-        .main-board {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 25px;
-            background: rgba(30, 30, 30, 0.4);
-            padding: 30px;
-            border-radius: 8px;
-            border: 1px solid #222;
-        }
-
-        .player-station {
-            background: var(--wood-medium);
-            border: 2px solid #444;
-            padding: 20px;
-            border-radius: 4px;
-            transition: all 0.4s ease;
-        }
-
-        .player-station.active {
-            border-color: var(--gold-border);
-            box-shadow: 0 0 25px rgba(203, 161, 99, 0.2);
-            transform: translateY(-5px);
-        }
-
-        .player-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .score-box {
-            background: #000;
-            padding: 5px 15px;
-            border: 1px solid var(--gold-border);
-            font-weight: bold;
-            color: var(--gold-glow);
-            font-size: 1.4rem;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        /* --- CARTAS --- */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 90px);
-            gap: 12px;
-        }
-
-        .card-slot {
-            width: 90px;
-            height: 125px;
-            background: rgba(0,0,0,0.4);
-            border: 1px dashed #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .card-slot.available:hover {
-            border-color: var(--gold-glow);
-            background: rgba(255,255,255,0.08);
-            cursor: pointer;
-        }
-
-        .card-entity {
-            width: 80px;
-            height: 115px;
-            background: var(--card-front);
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #111;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.6);
-            position: relative;
-        }
-
-        .card-entity.red { color: var(--accent-red); }
-        .card-entity .rank { font-size: 1.8rem; font-weight: bold; line-height: 1; }
-        .card-entity .suit { font-size: 1.2rem; }
-
-        /* --- ZONA CENTRAL --- */
-        .interaction-zone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            min-width: 180px;
-        }
-
-        .deck-box {
-            width: 90px;
-            height: 125px;
-            background: var(--accent-red);
-            border: 2px solid var(--gold-border);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: transform 0.2s;
-        }
-
-        .deck-box:hover { transform: scale(1.05); }
-
-        .btn-action {
-            background: transparent;
-            color: var(--gold-border);
-            border: 1px solid var(--gold-border);
-            padding: 12px;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .btn-action:hover:not(:disabled) { background: var(--gold-border); color: #000; }
-        .btn-action:disabled { opacity: 0.2; cursor: default; }
-
-        #status-msg { font-size: 0.9rem; color: var(--gold-glow); font-style: italic; }
-
-        /* --- Animate.css import --- */
-    </style>
-
-    <!-- Animate.css CDN -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
+
 <body>
 
-    <h1 class="header-title">Cardlebones</h1>
+    <h1 class="header-title">Corte de Baraja</h1>
+    <div class="top-buttons">
+        <button class="btn-small" onclick="openModal('modal-log')">Historial</button>
+        <button class="btn-small" onclick="openModal('modal-rules')">?</button>
+    </div>
 
     <div class="game-container">
-        <aside class="log-panel">
-            <h3>Historial de Partida</h3>
-            <div id="log-scroll"></div>
-        </aside>
-
         <main class="main-board">
             <section id="p0-ui" class="player-station active">
                 <div class="player-header">
-                    <span>JUGADOR 1</span>
+                    <span id="name-0">JUGADOR 1</span>
                     <div id="score-0" class="score-box">0</div>
                 </div>
+                <div class="column-selector" id="selector-0">
+                    <div class="selector-dot" data-col="0"></div>
+                    <div class="selector-dot" data-col="1"></div>
+                    <div class="selector-dot" data-col="2"></div>
+                </div>
+
                 <div id="board-0" class="card-grid"></div>
             </section>
-
             <div class="interaction-zone">
-                <div class="deck-box" id="btn-deck">
-                    <span style="color: var(--gold-border); font-size: 2.5rem;">♠</span>
+                <!-- Mazo 3D con 3 cartas apiladas -->
+                <div class="deck-3d" id="btn-deck">
+                    <div class="deck-card deck-card-3"></div>
+                    <div class="deck-card deck-card-2"></div>
+                    <div class="deck-card deck-card-1">
+                        <span style="color: var(--gold-border); font-size: 2rem;">♠</span>
+                    </div>
                 </div>
-                <div id="draw-preview" style="min-height: 125px;"></div>
-                <button class="btn-action" id="btn-draw">Tomar Carta</button>
+                <div id="draw-preview" class="draw-preview-area"></div>
+                <!-- Botón tomar carta removido - click en mazo funciona -->
+                <button class="btn-action" id="btn-shuffle">Barajar Mazo</button>
+                <div id="shuffle-count" class="shuffle-counter">
+                    Barajadas restantes: 3/3
+                </div>
                 <div id="status-msg">Turno: Jugador 1</div>
+                <div id="recycle-indicator" class="recycle-indicator" style="display:none;">
+                    ♻ Carta reciclada
+                </div>
+
             </div>
 
+            <!-- JUGADOR 2 -->
             <section id="p1-ui" class="player-station">
                 <div class="player-header">
-                    <span>JUGADOR 2</span>
+                    <span id="name-1">JUGADOR 2</span>
                     <div id="score-1" class="score-box">0</div>
                 </div>
+
+                <!-- Selector visual de columna -->
+                <div class="column-selector" id="selector-1">
+                    <div class="selector-dot" data-col="0"></div>
+                    <div class="selector-dot" data-col="1"></div>
+                    <div class="selector-dot" data-col="2"></div>
+                </div>
+
                 <div id="board-1" class="card-grid"></div>
             </section>
+
         </main>
     </div>
+    <div id="modal-log" class="modal-overlay">
+        <div class="modal">
+            <h2>Historial de Partida</h2>
+            <div id="log-scroll-modal"></div>
+            <button onclick="closeModal('modal-log')">Cerrar</button>
+        </div>
+    </div>
+    <div id="modal-end" class="modal-overlay">
+        <div class="modal">
+            <h2>Fin de la Partida</h2>
+            <div id="final-summary"></div>
+            <button onclick="reiniciarJuego()">Reiniciar</button>
+        </div>
+    </div>
+    <div id="modal-rules" class="modal-overlay">
+        <div class="modal">
+            <h2>Reglas del Juego</h2>
 
-    <!-- Scripts del juego -->
+            <h3>1. Objetivo y Preparación</h3>
+            <p>
+                <strong>Meta:</strong> Llenar tu tablero de 3×3 con cartas para lograr la mayor puntuación posible.<br>
+                <strong>Componentes:</strong> Un mazo de 52 cartas sin Jokers y un tablero individual de 3×3 para cada
+                jugador.<br>
+                <strong>Inicio:</strong> Se baraja el mazo, se coloca al centro y se decide quién comienza.
+            </p>
+
+            <h3>2. Mecánica del Juego (Turnos)</h3>
+            <p>
+                <strong>Robo obligatorio:</strong> En tu turno debes robar la carta superior del mazo.<br>
+                <strong>Colocación:</strong> La carta robada se coloca en un espacio vacío de tu tablero.<br>
+                <strong>Permanencia:</strong> Una vez colocada, no puede moverse ni reemplazarse.
+            </p>
+
+            <h3>3. Regla de Ataque</h3>
+            <p>
+                <strong>Activación:</strong> Al colocar una carta, se activa un efecto de ataque.<br>
+                <strong>Efecto por columna:</strong> Si la carta colocada coincide en rango con cartas del oponente en
+                la misma columna, esas cartas del oponente se descartan.<br>
+                <strong>Solo rango:</strong> El palo no importa para el ataque.
+            </p>
+
+            <h3>4. Fin de la Partida</h3>
+            <p>
+                <strong>Condición:</strong> La partida termina cuando el tablero de cualquiera de los jugadores queda
+                completamente lleno (9 casillas).
+            </p>
+
+            <h3>5. Sistema de Puntuación</h3>
+            <p>
+                Se suman los valores de las cartas y se aplican bonos por columna.
+            </p>
+
+            <p>
+                <strong>Valores base:</strong><br>
+                2-10: valor nominal.<br>
+                J: 11 puntos.<br>
+                Q: 12 puntos.<br>
+                K: 13 puntos.<br>
+                A: 14 puntos.
+            </p>
+
+            <p>
+                <strong>Multiplicadores:</strong><br>
+                Pareja (2 iguales): suma x2.<br>
+                Trío (3 iguales): suma x3.
+            </p>
+
+            <p>
+                <strong>Bonificaciones (solo columnas con 3 cartas):</strong><br>
+                Mismo color: +5 puntos.<br>
+                Mismo palo: +10 puntos.<br>
+                Escalera de color imperfecta (secuencia + mismo color): +15 puntos.<br>
+                Escalera real (secuencia + mismo palo): +25 puntos.<br>
+                <em>No acumulables; solo se aplica el mayor.</em>
+            </p>
+
+            <button onclick="closeModal('modal-rules')">Cerrar</button>
+        </div>
+    </div>
+
+    <script type="module" src="./dist/app.js"></script>
+
     <script>
-        /* --- Aquí va todo tu JS actual de juego (robar, colocar, historial, puntuación) --- */
+        window.openModal = id => {
+            const modal = document.getElementById(id);
+            if (modal) modal.style.display = "flex";
+        };
+        window.closeModal = id => {
+            const modal = document.getElementById(id);
+            if (modal) modal.style.display = "none";
+        };
+        // No modal-start exists, so don't try to open it
     </script>
 
-    <!-- Animaciones -->
-    <script src="animaciones.js"></script>
-
 </body>
+
 </html>

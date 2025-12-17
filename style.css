@@ -1,363 +1,731 @@
-/* Global Reset & Base */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Georgia', 'Times New Roman', serif;
+:root {
+    --bg-main: #0d0d0d;
+    --wood-dark: #1a0f0a;
+    --wood-medium: #2d1a11;
+    --gold-border: #cba163;
+    --gold-glow: #f0d5a3;
+    --accent-red: #7a1212;
+    --card-front: #fdfaf5;
+    --text-main: #e0d5c1;
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #1a1a1a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Background */
-#game-container {
-    width: 100%;
-    height: 100%;
-    background-image: url('./assets/background.png');
-    background-size: cover;
-    background-position: center;
-    position: relative;
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+    color: var(--text-main);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-.background-overlay {
+.header-title {
+    font-size: 2.8rem;
+    color: var(--gold-border);
+    text-shadow: 2px 2px 4px #000;
+    margin-bottom: 30px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    border-bottom: 3px double var(--gold-border);
+    padding-bottom: 10px;
+}
+
+/* Botones superiores */
+.top-buttons {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    gap: 20px;
+    z-index: 100;
+}
+
+.btn-small {
+    background: transparent;
+    border: 1px solid var(--gold-border);
+    color: var(--gold-border);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.btn-small:hover {
+    background: var(--gold-border);
+    color: #000;
+}
+
+.game-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    width: 100%;
+    max-width: 1350px;
+}
+
+/* Tablero principal */
+.main-board {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 25px;
+    background: rgba(30, 30, 30, 0.4);
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.player-station {
+    background: var(--wood-medium);
+    border: 2px solid #444;
+    padding: 20px;
+    border-radius: 4px;
+    transition: all 0.4s ease;
+}
+
+.player-station.active {
+    border-color: var(--gold-border);
+    box-shadow: 0 0 25px rgba(203, 161, 99, 0.3);
+    transform: translateY(-5px);
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(203, 161, 99, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(203, 161, 99, 0.6);
+    }
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.score-box {
+    background: #000;
+    padding: 5px 15px;
+    border: 1px solid var(--gold-border);
+    font-weight: bold;
+    color: var(--gold-glow);
+    font-size: 1.4rem;
+    min-width: 40px;
+    text-align: center;
+    transition: transform 0.2s, color 0.2s;
+}
+
+/* Selector de columna */
+.column-selector {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.selector-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #444;
+    transition: 0.3s;
+}
+
+.selector-dot.active {
+    background: var(--gold-glow);
+    box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* Cartas */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 90px);
+    gap: 12px;
+}
+
+.card-slot {
+    width: 90px;
+    height: 125px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px dashed #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.card-slot.available {
+    border-color: var(--gold-glow);
+    background: linear-gradient(135deg, rgba(203, 161, 99, 0.1) 0%, rgba(203, 161, 99, 0.3) 100%);
+    cursor: pointer;
+}
+
+.card-slot.available:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+}
+
+.card-entity {
+    width: 80px;
+    height: 115px;
+    background: var(--card-front);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-entity:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.card-entity.red {
+    color: var(--accent-red);
+}
+
+.card-entity .rank {
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.card-entity .suit {
+    font-size: 1.2rem;
+}
+
+/* Zona central */
+.interaction-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    min-width: 180px;
+}
+
+.deck-box {
+    width: 90px;
+    height: 125px;
+    background: var(--accent-red);
+    border: 2px solid var(--gold-border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
+}
+
+.deck-box:hover {
+    transform: scale(1.05);
+}
+
+.deck-box:active {
+    transform: scale(0.95);
+}
+
+/* Mazo 3D - 3 cartas apiladas */
+.deck-3d {
+    position: relative;
+    width: 90px;
+    height: 130px;
+    cursor: pointer;
+    perspective: 1000px;
+    margin-bottom: 15px;
+}
+
+.deck-card {
     position: absolute;
+    width: 90px;
+    height: 130px;
+    background: linear-gradient(135deg, #5a0a0a 0%, #7a1212 50%, #5a0a0a 100%);
+    border: 2px solid var(--gold-border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backface-visibility: hidden;
+}
+
+.deck-card-1 {
+    z-index: 3;
+    transform: translateY(0);
+}
+
+.deck-card-2 {
+    z-index: 2;
+    transform: translateY(-4px) translateX(2px);
+}
+
+.deck-card-3 {
+    z-index: 1;
+    transform: translateY(-8px) translateX(4px);
+}
+
+.deck-3d:hover .deck-card-1 {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.deck-3d:active .deck-card-1 {
+    transform: scale(0.95);
+}
+
+/* Animación shuffle 3D - cartas cambiando posiciones */
+.deck-3d.shuffle-animation .deck-card-1 {
+    animation: shuffleCard1 0.4s ease;
+}
+
+.deck-3d.shuffle-animation .deck-card-2 {
+    animation: shuffleCard2 0.4s ease 0.1s;
+}
+
+.deck-3d.shuffle-animation .deck-card-3 {
+    animation: shuffleCard3 0.4s ease 0.2s;
+}
+
+@keyframes shuffleCard1 {
+
+    0%,
+    100% {
+        transform: translateY(0) rotateZ(0);
+    }
+
+    25% {
+        transform: translateY(-15px) translateX(-20px) rotateZ(-10deg);
+        z-index: 1;
+    }
+
+    50% {
+        transform: translateY(-8px) translateX(4px) rotateZ(0);
+        z-index: 1;
+    }
+
+    75% {
+        transform: translateY(-4px) translateX(2px) rotateZ(5deg);
+        z-index: 2;
+    }
+}
+
+@keyframes shuffleCard2 {
+
+    0%,
+    100% {
+        transform: translateY(-4px) translateX(2px);
+    }
+
+    25% {
+        transform: translateY(-20px) translateX(25px) rotateZ(8deg);
+        z-index: 3;
+    }
+
+    50% {
+        transform: translateY(0) rotateZ(0);
+        z-index: 3;
+    }
+
+    75% {
+        transform: translateY(-8px) translateX(4px) rotateZ(-5deg);
+        z-index: 1;
+    }
+}
+
+@keyframes shuffleCard3 {
+
+    0%,
+    100% {
+        transform: translateY(-8px) translateX(4px);
+    }
+
+    25% {
+        transform: translateY(5px) translateX(-15px) rotateZ(-8deg);
+        z-index: 2;
+    }
+
+    50% {
+        transform: translateY(-4px) translateX(2px) rotateZ(0);
+        z-index: 2;
+    }
+
+    75% {
+        transform: translateY(0) rotateZ(5deg);
+        z-index: 3;
+    }
+}
+
+/* Animación de robar carta - giro 180° */
+.card-draw-flip {
+    animation: drawFlip 0.6s ease;
+    transform-style: preserve-3d;
+}
+
+@keyframes drawFlip {
+    0% {
+        transform: translateY(-50px) rotateY(180deg) scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(-20px) rotateY(90deg) scale(0.9);
+    }
+
+    100% {
+        transform: translateY(0) rotateY(0deg) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Area de preview */
+.draw-preview-area {
+    min-height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action {
+    background: transparent;
+    color: var(--gold-border);
+    border: 1px solid var(--gold-border);
+    padding: 12px;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-action:hover:not(:disabled) {
+    background: var(--gold-border);
+    color: #000;
+}
+
+.btn-action:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+#status-msg {
+    font-size: 0.9rem;
+    color: var(--gold-glow);
+    font-style: italic;
+}
+
+/* Contador de barajadas */
+.shuffle-counter {
+    font-size: 0.8rem;
+    color: #888;
+    text-align: center;
+}
+
+/* Indicador de reciclaje */
+.recycle-indicator {
+    background: rgba(0, 200, 100, 0.2);
+    border: 1px solid #0c6;
+    color: #0c6;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    animation: fadeInOut 1.5s ease;
+}
+
+@keyframes fadeInOut {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    20%,
+    80% {
+        opacity: 1;
+    }
+}
+
+/* Modales */
+.modal-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Header */
-header {
-    z-index: 10;
-    margin-bottom: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.title-banner {
-    width: 600px;
-    height: 100px;
-    background-image: url('./assets/title_banner.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    display: flex;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
     justify-content: center;
     align-items: center;
-}
-
-/* Main Area */
-main {
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    width: 95%;
-    height: 80%;
-    max-width: 1600px;
-}
-
-/* Section Styling */
-.player-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(46, 26, 15, 0.85);
-    /* Semi-transparent dark wood tint */
-    border: 4px solid #8b5a2b;
-    /* Bronze/Wood border */
-    border-radius: 20px;
-    padding: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-    position: relative;
-    max-width: 500px;
-}
-
-/* Specific Player 2 sizing to look like screenshot */
-#player2-area {
-    min-width: 600px;
-    /* Wider to fit log */
-}
-
-.player-header h2 {
-    color: #ffd700;
-    text-shadow: 2px 2px 4px #000;
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #8b5a2b;
-    padding-bottom: 5px;
-    width: 100%;
-    text-align: center;
-}
-
-/* Columns */
-.columns-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.columns-container {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-}
-
-.game-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 80px;
-}
-
-.card-slot {
-    width: 80px;
-    height: 112px;
-    background: #2a1a10;
-    border: 2px inset #5c3a21;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 10px #000;
-}
-
-.nav-arrow {
-    background: #4a2c18;
-    color: #ffd700;
-    border: 2px solid #8b5a2b;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.2rem;
-    padding: 5px 10px;
-    box-shadow: 0 4px 0 #2e1a0f;
-}
-
-.nav-arrow:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 #2e1a0f;
-}
-
-/* Controls */
-.controls-area {
-    margin-top: auto;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.selector-display-box {
-    background: linear-gradient(to bottom, #3e2614, #2a1a0f);
-    border: 2px solid #8b5a2b;
-    border-radius: 10px;
-    padding: 5px 15px;
-    color: #ddd;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.5);
-}
-
-.score-display {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.scroll-bg {
-    background: #e8d0aa;
-    /* Parchmentish */
-    color: #4a2c18;
-    padding: 5px 30px;
-    border-radius: 5px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    border: 1px solid #b39b7d;
-    position: relative;
-    /* Basic scroll effect via CSS borders/pseudo elements could be added */
-}
-
-/* Center Section */
-#center-area {
-    flex: 0 0 300px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-}
-
-.draw-pile-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.section-label,
-.section-label-bottom {
-    color: #e0e0e0;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-    text-shadow: 1px 1px 2px #000;
-}
-
-.section-label-bottom {
-    margin-top: 5px;
-}
-
-.card-stack {
-    position: relative;
-    width: 100px;
-    height: 140px;
-    /* If we had the velvet base, we'd use it here. 
-       For now, we just center the card. */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.pile-card {
-    width: 90px;
-    height: 126px;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s;
-    cursor: pointer;
-}
-
-.pile-card:hover {
-    transform: translateY(-5px);
-}
-
-.gold-coin-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: none;
-    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b, #8b5a2b);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.6);
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.gold-coin-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
-}
-
-.gold-coin-btn::after {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    border-radius: 50%;
-    border: 2px solid #fff3a0;
-    opacity: 0.6;
-}
-
-.turn-indicator {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: 1px solid #8b5a2b;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Player 2 specifics */
-.content-row {
-    display: flex;
-    gap: 20px;
-}
-
-.game-log-wrapper {
-    width: 180px;
-    height: 350px;
-    padding: 5px;
-}
-
-.log-paper {
-    width: 100%;
-    height: 100%;
-    background-image: url('./assets/parchment.png');
-    /* Use generated parchment */
-    background-size: cover;
-    border: 1px solid #c0a080;
-    padding: 15px;
-    color: #3e2614;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
-    overflow: hidden;
-}
-
-.log-header-text {
-    text-align: center;
-    font-weight: bold;
-    border-bottom: 1px dashed #3e2614;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-}
-
-.log-content {
-    flex: 1;
+    z-index: 1000;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
+    padding: 20px;
 }
 
-.log-entry {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-weight: bold;
+.modal {
+    background: var(--wood-dark);
+    border: 3px solid var(--gold-border);
+    padding: 35px;
+    width: 450px;
+    max-width: 90%;
+    border-radius: 6px;
+    box-shadow: 0 0 30px #000;
+    animation: modalIn 0.3s ease;
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
-.wood-btn {
-    background: linear-gradient(to bottom, #8b5a2b, #4a2c18);
-    color: #ffd700;
-    border: 2px solid #2e1a0f;
-    padding: 8px 20px;
-    font-family: 'Georgia', serif;
-    font-variant: small-caps;
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal h2 {
+    color: var(--gold-border);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+.modal h3 {
+    color: var(--gold-glow);
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.modal p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.modal input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #111;
+    color: var(--text-main);
+}
+
+.modal button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid var(--gold-border);
+    color: var(--gold-border);
     cursor: pointer;
-    box-shadow: 0 4px 0 #2a1a0f;
-    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
-.wood-btn:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 0 #2a1a0f;
+.modal button:hover {
+    background: var(--gold-border);
+    color: #000;
+}
+
+#log-scroll-modal {
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#log-scroll-modal .log-entry {
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 8px;
+    padding: 8px;
+    border-left: 3px solid var(--gold-border);
+    font-size: 0.85rem;
+}
+
+#final-summary {
+    text-align: center;
+}
+
+#final-summary h3 {
+    color: var(--gold-glow);
+    font-size: 1.3rem;
+    margin-top: 15px;
+}
+
+/* Animaciones de cartas */
+@keyframes cardPlace {
+    0% {
+        transform: translateY(-30px) scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.card-placed {
+    animation: cardPlace 0.3s ease-out;
+}
+
+@keyframes cardDestroy {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1) rotate(5deg);
+        filter: brightness(1.5);
+    }
+
+    100% {
+        transform: scale(0) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.card-destroying {
+    animation: cardDestroy 1.5s ease-out forwards;
+}
+
+/* Animación: Carta vuela hacia el mazo */
+.card-fly-to-deck {
+    animation: flyToDeck 0.8s ease-in-out forwards;
+    z-index: 100;
+}
+
+@keyframes flyToDeck {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(50px, -30px) scale(0.7) rotateY(90deg);
+    }
+
+    100% {
+        transform: translate(100px, -60px) scale(0.4) rotateY(180deg);
+        opacity: 0;
+    }
+}
+
+/* Animación: Shuffle del mazo */
+.shuffle-animation {
+    animation: shuffleShake 0.5s ease;
+}
+
+@keyframes shuffleShake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    20% {
+        transform: rotate(-3deg) translateX(-3px);
+    }
+
+    40% {
+        transform: rotate(3deg) translateX(3px);
+    }
+
+    60% {
+        transform: rotate(-2deg) translateX(-2px);
+    }
+
+    80% {
+        transform: rotate(2deg) translateX(2px);
+    }
+}
+
+/* Animación: Conteo de carta */
+.counting-card {
+    animation: countPulse 0.4s ease;
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    z-index: 10;
+}
+
+@keyframes countPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+
+    50% {
+        transform: scale(1.12);
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+    }
+
+    100% {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Animación: Bonus con brillo dorado */
+.bonus-highlight {
+    animation: bonusGlow 0.8s ease;
+    box-shadow: 0 0 30px var(--gold-glow), 0 0 60px var(--gold-border) !important;
+    border: 2px solid var(--gold-glow) !important;
+}
+
+@keyframes bonusGlow {
+
+    0%,
+    100% {
+        filter: brightness(1);
+        box-shadow: 0 0 15px var(--gold-border);
+    }
+
+    50% {
+        filter: brightness(1.8);
+        box-shadow: 0 0 50px var(--gold-glow), 0 0 80px var(--gold-border);
+    }
+}
+
+/* Animación: Carta entrando al mazo */
+.card-entering-deck {
+    animation: enterDeck 0.4s ease-out;
+}
+
+@keyframes enterDeck {
+    0% {
+        transform: translateY(-20px) scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
 }
